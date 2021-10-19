@@ -78,15 +78,20 @@ class database:
         if(self.tempDatabase):
             self.tempDatabase.close()
 
+    def search(self): #retrieves data from specified year
+        self.tempDatabase = sqlite3.connect('temperatures.db')
+        cursor = self.tempDatabase.cursor()
+        cursor.execute('''SELECT YEAR, MEDIAN FROM tempTable''')
+        result = cursor.fetchall()
+        return result
+
     def checkTable(self): #checks to see if the table is already there
         self.tempDatabase = sqlite3.connect('temperatures.db')
         cursor = self.tempDatabase.cursor()
         cursor. execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name = 'tempTable' ''')
         if (cursor.fetchone()[0] == 1):
-            print("yes table")
             return False
         else:
-            print("no table")
             return True
         cursor.close()
         if(self.tempDatabase):
@@ -94,7 +99,7 @@ class database:
 
    
 
-
+#stores temp data into a dictionary
 temp = tempData([])
 yearData = []
 allTempData = {} #this is where all the data is stored before it goes into the database. Format year: med, up, low
@@ -102,14 +107,15 @@ tempParse(temp)
 storeYear(temp, yearData)
 storeTempData(temp, allTempData, yearData)
 
+#database class
 tempDB = database([])
 #this is done for my sake, as i keep testing the code and it will keep adding to database if it doesn't check
 if(tempDB.checkTable()):
     tempDB.table()
     #mama mia we got ourselves a filled table full of data
     for i in allTempData:
-    tempDB.insert(i, allTempData[i][0], allTempData[i][1], allTempData[i][2])
+        tempDB.insert(i, allTempData[i][0], allTempData[i][1], allTempData[i][2])
+
 
 
     
-
